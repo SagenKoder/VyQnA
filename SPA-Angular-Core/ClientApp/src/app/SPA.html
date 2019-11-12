@@ -1,0 +1,50 @@
+<div class="container">
+
+  <div class="row" *ngIf="showQnAList">
+    <div *ngIf="loading">Laster inn spørsmål...</div>
+
+    <div class="panel-body">
+      <div class="panel-group" *ngFor="let qna of allQnA">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{qna.question}}
+            <button class="btn btn-danger" (click)="sletteKunde(qna.id)">Slett</button>
+            <button class="btn btn-success" (click)="endreKunde(qna.id)">Endre</button>
+          </div>
+          <div class="panel-body">
+            {{kunde.answer}}
+          </div>
+        </div>
+      </div>
+      <button class='btn btn-primary' (click)='registrerKunde()'>Register kunde</button>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="visSkjema">
+    <form [formGroup]="skjema" (ngSubmit)="vedSubmit()">
+      <input class="form-control" formControlName="id" type="hidden" />
+      <div class="form-group">
+        <label>Spørsmål</label>
+        <input class="form-control" formControlName="question" />
+        <p class="alert alert-warning" [hidden]="skjema.controls.question.valid || (skjema.controls.question.pristine && !submitted)">
+          Fornavn er obligatorisk.
+        </p>
+      </div>
+      <div class="form-group">
+        <label>Svar</label>
+        <input class="form-control" formControlName="answer" />
+        <p class="alert alert-warning" [hidden]="skjema.controls.answer.valid || (skjema.controls.answer.pristine && !submitted)">
+          Etternavn er obligatorisk.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" *ngIf="skjemaStatus=='Endre'" [disabled]="!skjema.valid" class="btn btn-primary">Endre</button>
+        <button type="submit" *ngIf="skjemaStatus=='Registrere'" [disabled]="!skjema.valid" class="btn btn-primary">Registrer</button>
+        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
+      </div>
+    </form>
+  </div>
+
+
+</div> <!-- CONTAINER END -->
