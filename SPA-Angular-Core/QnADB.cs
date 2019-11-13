@@ -64,13 +64,12 @@ namespace SPA_Angular_Core
         public bool update(int id, QnA qna)
         {
             // finn kunden
-            DBQnA foundQnA = _context.DBQnAs.FirstOrDefault(q => q.id == id);
+            DBQnA foundQnA = _context.DBQnAs.Find(id);
             if (foundQnA == null)
             {
                 return false;
             }
 
-            foundQnA.id = qna.id;
             foundQnA.answer = qna.answer;
             foundQnA.question = qna.question;
             foundQnA.upvotes = qna.upvotes;

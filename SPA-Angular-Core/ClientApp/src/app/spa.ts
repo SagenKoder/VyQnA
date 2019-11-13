@@ -3,7 +3,6 @@ import { Http, Response } from '@angular/http';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import "rxjs/add/operator/map";
 import { Headers } from "@angular/http";
-
 import { QnA } from "./QnA";
 
 @Component({
@@ -37,18 +36,15 @@ export class SPA {
 
     hentAlleKunder() {
         this._http.get("api/QnA/")
-           // .map(returData => {   --- .map er ikke lenger nødvendig!
-           //     let JsonData = returData.json();
-           //     return JsonData;
-           // 
            .subscribe(
               JsonData => {
                    this.allQnA = [];
               if (JsonData) {
                 for (let kundeObjekt of JsonData.json()) {
-                      this.allQnA.push(kundeObjekt);
-                      this.loading = false;
-                    }
+                    this.allQnA.push(kundeObjekt);
+                    console.log(kundeObjekt);
+                    this.loading = false;
+                  }
                 };
             },
             error => alert(error),
@@ -69,8 +65,6 @@ export class SPA {
     }
 
     registrerKunde() {
-        // må resette verdiene i skjema dersom skjema har blitt brukt til endringer
-
         this.skjema.setValue({
             id: "",
             question: "",
@@ -97,7 +91,6 @@ export class SPA {
         var headers = new Headers({ "Content-Type": "application/json" });
 
         this._http.post("api/QnA", body, { headers: headers })
-            //.map(returData => returData.toString())
             .subscribe(
                 retur=> {
                     this.hentAlleKunder();
@@ -128,7 +121,6 @@ export class SPA {
                 this.skjema.patchValue({ id: JsonData.id });
                 this.skjema.patchValue({ question: JsonData.question });
                 this.skjema.patchValue({ answer: JsonData.answer });
-                this.skjema.patchValue({ upvotes: JsonData.upvotes });
             },
             error => alert(error),
             () => console.log("ferdig get-api/QnA")
@@ -146,7 +138,7 @@ export class SPA {
 
         var body: string = JSON.stringify(endretKunde);
         var headers = new Headers({ "Content-Type": "application/json" });
-
+        console.log("Post to: " + "api/QnA/" + this.skjema.value.id + " with data: " + body);
         this._http.put("api/QnA/" + this.skjema.value.id, body, { headers: headers })
             .subscribe(
             retur => {
