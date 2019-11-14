@@ -16,5 +16,6 @@ namespace SPA_Angular_Core.Models
         [RegularExpression("^[a-zA-ZøæåØÆÅ\\-. ]{10,500}$")]
         public string answer { get; set; }
         public int upvotes { get; set; }
+        public int downvotes { get; set; }
     }
 }

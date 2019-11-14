@@ -7,12 +7,12 @@
 
       <div class="panel panel-default" *ngFor="let item of allQnA; let i = index">
         <div class="panel-heading">
-          <button class="btn btn-link" data-toggle="collapse" [attr.data-target]="'#question-body' + i" aria-expanded="true" [attr.aria-controls]="'question-body' + i">
+          <button class="btn btn-link" data-toggle="collapse" [attr.data-target]="'#question-body' + item.id" aria-expanded="true" [attr.aria-controls]="'question-body' + item.id">
             {{item.question}}
           </button>
-          <span class="float-right"><span class="text-success"><b>{{item.upvotes}}</b></span> | <span class="text-danger"><b>{{item.upvotes}}</b></span></span>
+          <span class="float-right"><button class="btn btn-sm btn-light text-success" (click)="upvoteQuestion(item.id)"><b>{{item.upvotes}}</b> <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button> | <button class="btn btn-sm btn-light text-danger" (click)="downvoteQuestion(item.id)"><b [attr.id]="'question_downvotes_text_' + item.id">{{item.downvotes}}</b> <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button></span>
         </div>
-        <div class="panel-body collapse" id="question-body{{i}}" data-parent="#accordion">
+        <div class="panel-body collapse" id="question-body{{item.id}}" data-parent="#accordion">
 
           <div class="panel-group">
             <div class="panel panel-default">
@@ -47,7 +47,6 @@
               </div>
             </div>
           </div>
-
 
           <hr />
 

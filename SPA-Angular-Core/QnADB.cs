@@ -20,7 +20,8 @@ namespace SPA_Angular_Core
                     id = q.id, 
                     answer = q.answer, 
                     question = q.question, 
-                    upvotes = q.upvotes 
+                    upvotes = q.upvotes,
+                    downvotes = q.downvotes
                 })
                 .ToList();
         }
@@ -34,7 +35,8 @@ namespace SPA_Angular_Core
                 id = dnQnA.id,
                 answer = dnQnA.answer,
                 question = dnQnA.question,
-                upvotes = dnQnA.upvotes
+                upvotes = dnQnA.upvotes,
+                downvotes = dnQnA.downvotes
             };
             return qna;
         }
@@ -46,7 +48,8 @@ namespace SPA_Angular_Core
                 id = qna.id,
                 answer = qna.answer,
                 question = qna.question,
-                upvotes = qna.upvotes
+                upvotes = qna.upvotes,
+                downvotes = qna.downvotes
             };
 
             try
@@ -63,7 +66,6 @@ namespace SPA_Angular_Core
 
         public bool update(int id, QnA qna)
         {
-            // finn kunden
             DBQnA foundQnA = _context.DBQnAs.Find(id);
             if (foundQnA == null)
             {
@@ -73,6 +75,7 @@ namespace SPA_Angular_Core
             foundQnA.answer = qna.answer;
             foundQnA.question = qna.question;
             foundQnA.upvotes = qna.upvotes;
+            foundQnA.downvotes = qna.downvotes;
 
             try
             {
@@ -84,7 +87,49 @@ namespace SPA_Angular_Core
             }
             return true;
         }
-        
+
+        public bool upvoteQuestion(int id)
+        {
+            DBQnA foundQnA = _context.DBQnAs.Find(id);
+            if (foundQnA == null)
+            {
+                return false;
+            }
+
+            foundQnA.upvotes = foundQnA.upvotes + 1;
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception feil)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool downvoteQuestion(int id)
+        {
+            DBQnA foundQnA = _context.DBQnAs.Find(id);
+            if (foundQnA == null)
+            {
+                return false;
+            }
+
+            foundQnA.downvotes = foundQnA.downvotes + 1;
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception feil)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public bool delete(int id)
         {
             try

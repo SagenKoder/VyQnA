@@ -71,5 +71,29 @@ namespace SPA_Angular_Core.Controllers
             }
             return Json("OK");
         }
+
+        [HttpGet("UpvoteQuestion/{id}")]
+        public JsonResult UpvoteQuestion(int id)
+        {
+            var qnaDB = new QnADB(_context);
+            bool OK = qnaDB.upvoteQuestion(id);
+            if (!OK)
+            {
+                return Json("Could not upvote QnA in database!");
+            }
+            return Json("OK");
+        }
+
+        [HttpGet("DownvoteQuestion/{id}")]
+        public JsonResult DownvoteQuestion(int id)
+        {
+            var qnaDB = new QnADB(_context);
+            bool OK = qnaDB.downvoteQuestion(id);
+            if (!OK)
+            {
+                return Json("Could not downvote QnA in database!");
+            }
+            return Json("OK");
+        }
     }
 }

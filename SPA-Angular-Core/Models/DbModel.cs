@@ -14,12 +14,16 @@ namespace SPA_Angular_Core.Models
         public string question { get; set; }
         public string answer { get; set; }
         public int upvotes { get; set; }
+        public int downvotes { get; set; }
     }
 
     public class QnAContext : DbContext
     {
-        public QnAContext(DbContextOptions<QnAContext> options)
-        : base(options)  { }
+
+        public QnAContext(DbContextOptions<QnAContext> options) : base(options)  
+        {
+                   
+        }
       
         public DbSet<DBQnA> DBQnAs { get; set; }
     }

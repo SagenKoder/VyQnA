@@ -3,4 +3,5 @@ export class QnA {
     question: string;
     answer: string;
     upvotes: number;
+    downvotes: number;
 }

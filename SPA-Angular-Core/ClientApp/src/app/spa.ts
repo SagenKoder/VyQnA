@@ -150,4 +150,26 @@ export class SPA {
             () => console.log("ferdig post-api/QnA")
         );
     }
+
+    upvoteQuestion(id: number) {
+        this._http.get("api/QnA/UpvoteQuestion/" + id)
+            .subscribe(
+                JsonData => {
+                    this.hentAlleKunder();
+                },
+                error => alert(error),
+                () => console.log("ferdig get-api/QnA")
+            );
+    }
+
+    downvoteQuestion(id: number) {
+        this._http.get("api/QnA/DownvoteQuestion/" + id)
+            .subscribe(
+                JsonData => {
+                    this.hentAlleKunder();
+                },
+                error => alert(error),
+                () => console.log("ferdig get-api/QnA")
+            );
+    }
 }

@@ -23,6 +23,7 @@ namespace SPA_Angular_Core
                 try
                 {
                     var context = services.GetRequiredService<QnAContext>();
+                    context.Database.EnsureDeleted();
                     context.Database.EnsureCreated();
                 }
                 catch (Exception ex)
