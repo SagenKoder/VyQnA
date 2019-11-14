@@ -33,15 +33,7 @@
 
           <hr />
 
-          <div class="d-flex justify-content-between">
-            <div>
-              <small>Er dette spørsmålet hjelpsomt?</small>
-              <button class="btn btn-light btn-sm" (click)="endreKunde(item.id)"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-              <button class="btn btn-light btn-sm" (click)="sletteKunde(item.id)"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-            </div>
-            <button class='btn btn-primary' (click)='registrerKunde()'>Skriv et nytt svar</button>
-          </div>
-
+          <button class='btn btn-primary' (click)='registerAnswer(item.id)'>Skriv et nytt svar</button>
         </div>
       </div>
 
@@ -60,48 +52,32 @@
   </div>
 
   <div class="row" *ngIf="visSkjema">
-    <form [formGroup]="skjema" (ngSubmit)="vedSubmit()">
+    <form [formGroup]="questionForm" (ngSubmit)="submitQuestion()">
       <div class="form-group">
         <label>Spørsmål</label>
-        <input class="form-control" formControlName="question" />
-        <p class="alert alert-warning" [hidden]="skjema.controls.question.valid || (skjema.controls.question.pristine && !submitted)">
+        <input class="form-control" formControlName="questionText" />
+        <p class="alert alert-warning" [hidden]="questionForm.controls.questionText.valid || (questionForm.controls.questionText.pristine && !submitted)">
           Spørsmål er obligatorisk.
         </p>
       </div>
 
       <div class="form-group">
-        <button type="submit" [disabled]="!skjema.valid" class="btn btn-primary">Send inn</button>
-        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="row" *ngIf="visSkjema">
-    <form [formGroup]="skjema" (ngSubmit)="vedSubmit()">
-      <div class="form-group">
-        <label>Spørsmål</label>
-        <input class="form-control" formControlName="question" />
-        <p class="alert alert-warning" [hidden]="skjema.controls.question.valid || (skjema.controls.question.pristine && !submitted)">
-          Spørsmål er obligatorisk.
-        </p>
-      </div>
-
-      <div class="form-group">
-        <button type="submit" [disabled]="!skjema.valid" class="btn btn-primary">Send inn</button>
+        <button type="submit" [disabled]="!questionForm.valid" class="btn btn-primary">Send inn</button>
         <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
       </div>
     </form>
   </div>
 
 
-  <div class="row" *ngIf="visSkjema">
-    <form [formGroup]="answerForm" (ngSubmit)="vedSubmitAnswer()">
+  <div class="row" *ngIf="showAnswerForm">
+    <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()">
+
       <input class="form-control" formControlName="questionId" type="hidden" />
 
       <div class="form-group">
-        <label>Svar</label>
-        <input class="form-control" formControlName="answerText" />
-        <p class="alert alert-warning" [hidden]="answerForm.controls.text.valid || (answerForm.controls.text.pristine && !submitted)">
+        <label>Opprett nytt svar</label>
+        <textarea class="form-control" formControlName="answerText"></textarea>
+        <p class="alert alert-warning" [hidden]="answerForm.controls.answerText.valid || (answerForm.controls.answerText.pristine && !submitted)">
           Svartekst er obligatorisk.
         </p>
       </div>

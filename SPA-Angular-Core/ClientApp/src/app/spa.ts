@@ -8,7 +8,7 @@ import { Answer } from "./Answer";
 
 @Component({
     selector: "min-app",
-    templateUrl: "spa.html"
+    templateUrl: "SPA.html"
 })
 
 export class SPA {
@@ -18,26 +18,25 @@ export class SPA {
 
     loading: boolean;
 
-    skjema: FormGroup;
+    questionForm: FormGroup;
     answerForm: FormGroup;
 
     allQnA: Array<QnA>;
     
     constructor(private _http: Http, private fb: FormBuilder) {
-        //this.skjema = fb.group({
-        //    question: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
-        //});
-
-        //this.answerForm = fb.group({
-        //    answerText: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
-        //});
-
-        this.skjema = new FormGroup({
-            question: new FormControl(null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")]))
+        this.questionForm = this.fb.group({
+            questionText: new FormControl(null, Validators.compose([
+                Validators.required,
+                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")
+            ]))
         });
 
-        this.answerForm = new FormGroup({
-            answerText: new FormControl(null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")]))
+        this.answerForm = this.fb.group({
+            questionId: [""],
+            answerText: new FormControl(null, Validators.compose([
+                Validators.required,
+                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,5000}")
+            ]))
         });
     }
     
@@ -47,6 +46,12 @@ export class SPA {
         this.visSkjema = false;
         this.showAnswerForm = false;
         this.showQnAList = true;
+    }
+
+    showList() {
+        this.showQnAList = true;
+        this.visSkjema = false;
+        this.showAnswerForm = false;
     }
 
     hentAlleKunder() {
@@ -66,45 +71,65 @@ export class SPA {
         );
     };
 
-    vedSubmit() {
-        this.lagreKunde();
-    }
-
-    registrerKunde() {
-        this.skjema.setValue({
-            question: ""
-        });
-        this.skjema.markAsPristine();
-        this.showQnAList = false;
-        this.showAnswerForm = false;
-        this.visSkjema = true;
-    }
-
-    tilbakeTilListe() {
-        this.showQnAList = true;
-        this.visSkjema = false;
-        this.showAnswerForm = false;
-    }
-
-    lagreKunde() {
+    submitQuestion() {
         var lagretKunde = new QnA();
 
-        lagretKunde.text = this.skjema.value.question;
+        lagretKunde.text = this.questionForm.value.questionText;
 
         var body: string = JSON.stringify(lagretKunde);
         var headers = new Headers({ "Content-Type": "application/json" });
 
         this._http.post("api/QnA", body, { headers: headers })
             .subscribe(
-                retur=> {
+                retur => {
                     this.hentAlleKunder();
-                    this.visSkjema = false;
-                    this.showQnAList = true;
+                    this.showList();
                 },
-            error => alert(error),
-            () => console.log("ferdig post-api/QnA")
-        );
-    };
+                error => alert(error),
+                () => console.log("ferdig post-api/QnA")
+            );
+    }
+
+    submitAnswer() {
+        var answer = new Answer();
+
+        var questionId = this.answerForm.value.questionId;
+        answer.text = this.answerForm.value.answerText;
+
+        var body: string = JSON.stringify(answer);
+        var headers = new Headers({ "Content-Type": "application/json" });
+
+        this._http.post("api/QnA/SaveAnswer/" + questionId, body, { headers: headers })
+            .subscribe(
+                retur => {
+                    this.hentAlleKunder();
+                    this.showList();
+                },
+                error => alert(error),
+                () => console.log("ferdig post-api/QnA")
+            );
+    }
+
+    registerAnswer(id: number) {
+        this.answerForm.setValue({
+            answerText: "",
+            questionId: id
+        });
+        this.answerForm.markAsPristine();
+        this.showQnAList = false;
+        this.showAnswerForm = true;
+        this.visSkjema = false;
+    }
+
+    registrerKunde() {
+        this.questionForm.setValue({
+            questionText: ""
+        });
+        this.questionForm.markAsPristine();
+        this.showQnAList = false;
+        this.showAnswerForm = false;
+        this.visSkjema = true;
+    }
 
     upvoteQuestion(id: number) {
         // increment immediately and update from server later
@@ -112,19 +137,7 @@ export class SPA {
         numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
         this._http.get("api/QnA/UpvoteQuestion/" + id)
             .subscribe(
-                JsonData => {
-                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
-
-                    //this._http.get("api/QnA/" + id)
-                    //    .subscribe(
-                    //        returData => {
-                    //            let JsonData = returData.json();
-                    //            numField.innerHTML = JsonData.upvotes;
-                    //        },
-                    //        error => alert(error),
-                    //        () => console.log("ferdig get-api/QnA")
-                    //    );
-                },
+                JsonData => {},
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")
             );
@@ -137,19 +150,7 @@ export class SPA {
 
         this._http.get("api/QnA/DownvoteQuestion/" + id)
             .subscribe(
-                JsonData => {
-                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
-
-                    //this._http.get("api/QnA/" + id)
-                    //    .subscribe(
-                    //        returData => {
-                    //            let JsonData = returData.json();
-                    //            numField.innerHTML = JsonData.downvotes;
-                    //        },
-                    //        error => alert(error),
-                    //        () => console.log("ferdig get-api/QnA")
-                    //    );
-                },
+                JsonData => {},
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")
             );
@@ -161,19 +162,7 @@ export class SPA {
         numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
         this._http.get("api/QnA/UpvoteAnswer/" + answerId)
             .subscribe(
-                JsonData => {
-                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
-
-                    //this._http.get("api/QnA/" + id)
-                    //    .subscribe(
-                    //        returData => {
-                    //            let JsonData = returData.json();
-                    //            numField.innerHTML = JsonData.upvotes;
-                    //        },
-                    //        error => alert(error),
-                    //        () => console.log("ferdig get-api/QnA")
-                    //    );
-                },
+                JsonData => {},
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")
             );

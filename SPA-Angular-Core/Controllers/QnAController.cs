@@ -37,12 +37,6 @@ namespace SPA_Angular_Core.Controllers
             {
                 var qnaDB = new QnADB(_context);
                 bool OK = qnaDB.save(qna);
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heiiiiii0iiii<3" });
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heii3iiiiiiii<3" });
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heii4iiiiiiii<3" });
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heiiii5iiiiii<3" });
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heiiii6iiiiii<3" });
-                qnaDB.saveAnswer(qna.Id, new Answer { Text = "Heiiiii7iiiii<3" });
                 if (OK)
                 {
                     return Json("OK");
