@@ -21,8 +21,6 @@ namespace SPA_Angular_Core.Models
         public int Id { get; set; }
         public string Answer { get; set; }
         public int Upvotes { get; set; }
-        public int QnAId { get; set; }
-        [ForeignKey("QnAId")]
         public virtual DBQnA QnA { get; set; }
     }
 

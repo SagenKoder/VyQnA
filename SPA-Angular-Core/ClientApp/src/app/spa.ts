@@ -1,9 +1,10 @@
 import {Component, OnInit} from "@angular/core";
 import { Http, Response } from '@angular/http';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import "rxjs/add/operator/map";
 import { Headers } from "@angular/http";
 import { QnA } from "./QnA";
+import { Answer } from "./Answer";
 
 @Component({
     selector: "min-app",
@@ -12,23 +13,39 @@ import { QnA } from "./QnA";
 
 export class SPA {
     visSkjema: boolean;
-    skjema: FormGroup;
+    showAnswerForm: boolean;
+    showQnAList: boolean;
+
     loading: boolean;
 
-    showQnAList: boolean;
+    skjema: FormGroup;
+    answerForm: FormGroup;
+
     allQnA: Array<QnA>;
     
     constructor(private _http: Http, private fb: FormBuilder) {
-        this.skjema = fb.group({
-            id: [""],
-            question: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
+        //this.skjema = fb.group({
+        //    question: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
+        //});
+
+        //this.answerForm = fb.group({
+        //    answerText: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
+        //});
+
+        this.skjema = new FormGroup({
+            question: new FormControl(null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")]))
+        });
+
+        this.answerForm = new FormGroup({
+            answerText: new FormControl(null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")]))
         });
     }
-   
+    
     ngOnInit() {
         this.loading = true;
         this.hentAlleKunder();
         this.visSkjema = false;
+        this.showAnswerForm = false;
         this.showQnAList = true;
     }
 
@@ -55,17 +72,18 @@ export class SPA {
 
     registrerKunde() {
         this.skjema.setValue({
-            id: "",
             question: ""
         });
         this.skjema.markAsPristine();
         this.showQnAList = false;
+        this.showAnswerForm = false;
         this.visSkjema = true;
     }
 
     tilbakeTilListe() {
         this.showQnAList = true;
         this.visSkjema = false;
+        this.showAnswerForm = false;
     }
 
     lagreKunde() {
@@ -95,16 +113,17 @@ export class SPA {
         this._http.get("api/QnA/UpvoteQuestion/" + id)
             .subscribe(
                 JsonData => {
-                    //this.hentAlleKunder();
-                    this._http.get("api/QnA/" + id)
-                        .subscribe(
-                            returData => {
-                                let JsonData = returData.json();
-                                numField.innerHTML = JsonData.upvotes;
-                            },
-                            error => alert(error),
-                            () => console.log("ferdig get-api/QnA")
-                        );
+                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
+
+                    //this._http.get("api/QnA/" + id)
+                    //    .subscribe(
+                    //        returData => {
+                    //            let JsonData = returData.json();
+                    //            numField.innerHTML = JsonData.upvotes;
+                    //        },
+                    //        error => alert(error),
+                    //        () => console.log("ferdig get-api/QnA")
+                    //    );
                 },
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")
@@ -119,16 +138,41 @@ export class SPA {
         this._http.get("api/QnA/DownvoteQuestion/" + id)
             .subscribe(
                 JsonData => {
-                    //this.hentAlleKunder();
-                    this._http.get("api/QnA/" + id)
-                        .subscribe(
-                            returData => {
-                                let JsonData = returData.json();
-                                numField.innerHTML = JsonData.downvotes;
-                            },
-                            error => alert(error),
-                            () => console.log("ferdig get-api/QnA")
-                        );
+                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
+
+                    //this._http.get("api/QnA/" + id)
+                    //    .subscribe(
+                    //        returData => {
+                    //            let JsonData = returData.json();
+                    //            numField.innerHTML = JsonData.downvotes;
+                    //        },
+                    //        error => alert(error),
+                    //        () => console.log("ferdig get-api/QnA")
+                    //    );
+                },
+                error => alert(error),
+                () => console.log("ferdig get-api/QnA")
+            );
+    }
+
+    upvoteAnswer(questionId: number, answerId: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("answer_upvotes_text_" + questionId + '_' + answerId);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
+        this._http.get("api/QnA/UpvoteAnswer/" + answerId)
+            .subscribe(
+                JsonData => {
+                    // Dette er treigt og ser rart ut så baserer meg på å bare oppdatere lokalt med lokale tall
+
+                    //this._http.get("api/QnA/" + id)
+                    //    .subscribe(
+                    //        returData => {
+                    //            let JsonData = returData.json();
+                    //            numField.innerHTML = JsonData.upvotes;
+                    //        },
+                    //        error => alert(error),
+                    //        () => console.log("ferdig get-api/QnA")
+                    //    );
                 },
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")

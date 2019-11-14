@@ -15,32 +15,34 @@ namespace SPA_Angular_Core
         
         public List<QnA> getAll()
         {
-            return _context.DBQnAs.Select(q => new QnA()
+            var ret = _context.DBQnAs.Select(q => new QnA()
             {
                 Id = q.Id,
                 Text = q.Question,
                 Upvotes = q.Upvotes,
                 Downvotes = q.Downvotes,
-                Answers = q.Answers.Select(a => new Answer {
+                Answers = _context.Answers.Where(a => a.QnA.Id == q.Id).Select(a => new Answer
+                {
                     Id = a.Id,
                     Text = a.Answer,
                     Upvotes = a.Upvotes
                 }).ToList()
             }).ToList();
+
+            return ret;
         }
         
         public QnA get(int id)
         {
             DBQnA dnQnA = _context.DBQnAs.FirstOrDefault(q => q.Id == id);
             
-
             var qna = new QnA
             {
                 Id = dnQnA.Id,
                 Text = dnQnA.Question,
                 Upvotes = dnQnA.Upvotes,
                 Downvotes = dnQnA.Downvotes,
-                Answers = dnQnA.Answers.Select(a => new Answer
+                Answers = _context.Answers.Where(a => a.QnA.Id == dnQnA.Id).Select(a => new Answer
                 {
                     Id = a.Id,
                     Text = a.Answer,
@@ -61,6 +63,7 @@ namespace SPA_Angular_Core
             {
                _context.DBQnAs.Add(dbQnA);
                _context.SaveChanges();
+                qna.Id = dbQnA.Id;
             }
             catch(Exception ex)
             {
@@ -130,12 +133,10 @@ namespace SPA_Angular_Core
         {
             var dbAnswer = new DBAnswer
             {
-                Id = answer.Id,
                 Answer = answer.Text,
-                Upvotes = answer.Upvotes
             };
 
-            DBQnA dbQnA = _context.DBQnAs.FirstOrDefault(q => q.Id == question);
+            DBQnA dbQnA = _context.DBQnAs.Find(question);
             if (dbQnA == null)
             {
                 return false;
@@ -146,9 +147,10 @@ namespace SPA_Angular_Core
                 _context.Answers.Add(dbAnswer);
                 
                 dbAnswer.QnA = dbQnA;
-                dbQnA.Answers.Add(dbAnswer);
 
                 _context.SaveChanges();
+
+                answer.Id = dbAnswer.Id;
             }
             catch (Exception ex)
             {

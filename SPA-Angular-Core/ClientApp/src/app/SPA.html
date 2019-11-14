@@ -5,7 +5,7 @@
 
     <div class="panel-group" id="accordion">
 
-      <div class="panel panel-default" *ngFor="let item of allQnA; let i = index">
+      <div class="panel panel-default" *ngFor="let item of allQnA;">
         <div class="panel-heading d-flex flex-nowrap justify-content-between">
           <button class="btn btn-link flex-shrink-1 text-wrap" data-toggle="collapse" [attr.data-target]="'#question-body' + item.id" aria-expanded="true" [attr.aria-controls]="'question-body' + item.id">
             {{item.text}}
@@ -15,18 +15,17 @@
         <div class="panel-body collapse" id="question-body{{item.id}}" data-parent="#accordion">
 
           <!-- Answers -->
-          <div class="panel-group">
+          <div class="panel-group" *ngFor="let answer of item.answers">
             <div class="panel panel-default">
               <div class="panel-heading">
                 <small>Svar fra 10. feb 2019</small>
-                <small class="float-right"><b>10</b> personer fant svaret hjelpsomt</small>
+                <small class="float-right"><b [attr.id]="'answer_upvotes_text_' + item.id + '_' + answer.id">{{answer.upvotes}}</b> personer fant svaret hjelpsomt</small>
               </div>
               <div class="panel-body">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget sagittis sem. Maecenas quis fringilla sem, eu facilisis mi. In ut elit leo. Morbi id eros sagittis, condimentum justo eu, commodo mi. Duis sed consequat nibh. Sed lacinia erat ac erat malesuada, et pulvinar nibh pellentesque. Curabitur efficitur rhoncus lacinia. </p>
+                <p>{{answer.text}}</p>
                 <hr />
                 <small>Hjalp dette svaret deg?</small>
-                <button class="btn btn-light btn-sm" (click)="endreKunde(item.id)"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-                <button class="btn btn-light btn-sm" (click)="sletteKunde(item.id)"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+                <button class="btn btn-light btn-sm" (click)="upvoteAnswer(item.id, answer.id)"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
               </div>
             </div>
           </div>
@@ -34,9 +33,14 @@
 
           <hr />
 
-          <small>Er dette spørsmålet hjelpsomt?</small>
-          <button class="btn btn-light btn-sm" (click)="endreKunde(item.id)"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-          <button class="btn btn-light btn-sm" (click)="sletteKunde(item.id)"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+          <div class="d-flex justify-content-between">
+            <div>
+              <small>Er dette spørsmålet hjelpsomt?</small>
+              <button class="btn btn-light btn-sm" (click)="endreKunde(item.id)"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+              <button class="btn btn-light btn-sm" (click)="sletteKunde(item.id)"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+            </div>
+            <button class='btn btn-primary' (click)='registrerKunde()'>Skriv et nytt svar</button>
+          </div>
 
         </div>
       </div>
@@ -47,7 +51,7 @@
             <b>Finner du ikke noe svar på det du lurer på?</b>
           </button>
         </div>
-        <div class="panel-body collapse"  data-parent="#accordion" id="createNewQuestionBody">
+        <div class="panel-body collapse" data-parent="#accordion" id="createNewQuestionBody">
           <button class='btn btn-primary' (click)='registrerKunde()'>Opprett ett nytt spørsmål her</button>
         </div>
       </div>
@@ -57,8 +61,6 @@
 
   <div class="row" *ngIf="visSkjema">
     <form [formGroup]="skjema" (ngSubmit)="vedSubmit()">
-      <input class="form-control" formControlName="id" type="hidden" />
-
       <div class="form-group">
         <label>Spørsmål</label>
         <input class="form-control" formControlName="question" />
@@ -69,6 +71,43 @@
 
       <div class="form-group">
         <button type="submit" [disabled]="!skjema.valid" class="btn btn-primary">Send inn</button>
+        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="row" *ngIf="visSkjema">
+    <form [formGroup]="skjema" (ngSubmit)="vedSubmit()">
+      <div class="form-group">
+        <label>Spørsmål</label>
+        <input class="form-control" formControlName="question" />
+        <p class="alert alert-warning" [hidden]="skjema.controls.question.valid || (skjema.controls.question.pristine && !submitted)">
+          Spørsmål er obligatorisk.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" [disabled]="!skjema.valid" class="btn btn-primary">Send inn</button>
+        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
+      </div>
+    </form>
+  </div>
+
+
+  <div class="row" *ngIf="visSkjema">
+    <form [formGroup]="answerForm" (ngSubmit)="vedSubmitAnswer()">
+      <input class="form-control" formControlName="questionId" type="hidden" />
+
+      <div class="form-group">
+        <label>Svar</label>
+        <input class="form-control" formControlName="answerText" />
+        <p class="alert alert-warning" [hidden]="answerForm.controls.text.valid || (answerForm.controls.text.pristine && !submitted)">
+          Svartekst er obligatorisk.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" [disabled]="!answerForm.valid" class="btn btn-primary">Send inn svar</button>
         <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
       </div>
     </form>
