@@ -37,27 +37,13 @@ namespace SPA_Angular_Core.Controllers
             {
                 var qnaDB = new QnADB(_context);
                 bool OK = qnaDB.save(qna);
+                qnaDB.saveAnswer(qna.Id, new Answer { Text="Heiiiiiiiiii<3"});
                 if (OK)
                 {
                     return Json("OK");
                 }
             }
             return Json("Could not insert QnA into database!");          
-        }             
-
-        [HttpPut("{id}")]
-        public JsonResult Put(int id, [FromBody]QnA qna)
-        {
-            if(ModelState.IsValid)
-            {
-                var qnaDB = new QnADB(_context);
-                bool OK = qnaDB.update(id, qna);
-                if (OK)
-                {
-                    return Json("OK");
-                }
-            }
-            return Json("Could not change QnA database!");
         }
 
         [HttpDelete("{id}")]
@@ -94,6 +80,21 @@ namespace SPA_Angular_Core.Controllers
                 return Json("Could not downvote QnA in database!");
             }
             return Json("OK");
+        }
+
+        [HttpPost("SaveAnswer/{question}")]
+        public JsonResult PostQuestion(int question, [FromBody]Answer answer)
+        {
+            if (ModelState.IsValid)
+            {
+                var qnaDB = new QnADB(_context);
+                bool OK = qnaDB.saveAnswer(question, answer);
+                if (OK)
+                {
+                    return Json("OK");
+                }
+            }
+            return Json("Could not insert QnA into database!");
         }
     }
 }

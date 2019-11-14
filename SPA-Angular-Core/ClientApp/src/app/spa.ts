@@ -12,7 +12,6 @@ import { QnA } from "./QnA";
 
 export class SPA {
     visSkjema: boolean;
-    skjemaStatus: string;
     skjema: FormGroup;
     loading: boolean;
 
@@ -22,8 +21,7 @@ export class SPA {
     constructor(private _http: Http, private fb: FormBuilder) {
         this.skjema = fb.group({
             id: [""],
-            question: [null, Validators.compose([Validators.required, Validators.pattern("[a-zA-ZøæåØÆÅ\\-. ]{10,500}")])],
-            answer: [null, Validators.compose([Validators.required, Validators.pattern("[a-zA-ZøæåØÆÅ\\-. ]{10,500}")])]
+            question: [null, Validators.compose([Validators.required, Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")])]
         });
     }
    
@@ -36,15 +34,14 @@ export class SPA {
 
     hentAlleKunder() {
         this._http.get("api/QnA/")
-           .subscribe(
-              JsonData => {
-                   this.allQnA = [];
-              if (JsonData) {
-                for (let kundeObjekt of JsonData.json()) {
-                    this.allQnA.push(kundeObjekt);
-                    console.log(kundeObjekt);
+            .subscribe(JsonData => {
+                this.allQnA = [];
+                if (JsonData) {
                     this.loading = false;
-                  }
+                    for (let kundeObjekt of JsonData.json()) {
+                        this.allQnA.push(kundeObjekt);
+                        console.log(kundeObjekt);
+                    }
                 };
             },
             error => alert(error),
@@ -53,26 +50,16 @@ export class SPA {
     };
 
     vedSubmit() {
-        if (this.skjemaStatus == "Registrere") {
-            this.lagreKunde();
-        }
-        else if (this.skjemaStatus == "Endre") {
-            this.endreEnKunde();
-        }
-        else {
-            alert("Feil i applikasjonen!");
-        }
+        this.lagreKunde();
     }
 
     registrerKunde() {
         this.skjema.setValue({
             id: "",
-            question: "",
-            answer: ""
+            question: ""
         });
         this.skjema.markAsPristine();
         this.showQnAList = false;
-        this.skjemaStatus = "Registrere";
         this.visSkjema = true;
     }
 
@@ -84,8 +71,7 @@ export class SPA {
     lagreKunde() {
         var lagretKunde = new QnA();
 
-        lagretKunde.question = this.skjema.value.question;
-        lagretKunde.answer = this.skjema.value.answer;
+        lagretKunde.text = this.skjema.value.question;
 
         var body: string = JSON.stringify(lagretKunde);
         var headers = new Headers({ "Content-Type": "application/json" });
@@ -102,60 +88,23 @@ export class SPA {
         );
     };
 
-    sletteKunde(id: number) {
-        this._http.delete("api/QnA/" + id)
-            .subscribe(
-            retur => {
-                this.hentAlleKunder();
-            },
-            error => alert(error),
-            () => console.log("ferdig delete-api/QnA")
-        );
-    };
-
-    endreKunde(id: number) {
-        this._http.get("api/QnA/"+id)
-            .subscribe(
-            returData => {
-                let JsonData = returData.json();
-                this.skjema.patchValue({ id: JsonData.id });
-                this.skjema.patchValue({ question: JsonData.question });
-                this.skjema.patchValue({ answer: JsonData.answer });
-            },
-            error => alert(error),
-            () => console.log("ferdig get-api/QnA")
-        );
-        this.skjemaStatus = "Endre";
-        this.visSkjema = true;
-        this.showQnAList = false;
-    }
-
-    endreEnKunde() {
-        var endretKunde = new QnA();
-
-        endretKunde.question = this.skjema.value.question;
-        endretKunde.answer = this.skjema.value.answer;
-
-        var body: string = JSON.stringify(endretKunde);
-        var headers = new Headers({ "Content-Type": "application/json" });
-        console.log("Post to: " + "api/QnA/" + this.skjema.value.id + " with data: " + body);
-        this._http.put("api/QnA/" + this.skjema.value.id, body, { headers: headers })
-            .subscribe(
-            retur => {
-                this.hentAlleKunder();
-                this.visSkjema = false;
-                    this.showQnAList = true;
-            },
-            error => alert(error),
-            () => console.log("ferdig post-api/QnA")
-        );
-    }
-
     upvoteQuestion(id: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("question_upvotes_text_" + id);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
         this._http.get("api/QnA/UpvoteQuestion/" + id)
             .subscribe(
                 JsonData => {
-                    this.hentAlleKunder();
+                    //this.hentAlleKunder();
+                    this._http.get("api/QnA/" + id)
+                        .subscribe(
+                            returData => {
+                                let JsonData = returData.json();
+                                numField.innerHTML = JsonData.upvotes;
+                            },
+                            error => alert(error),
+                            () => console.log("ferdig get-api/QnA")
+                        );
                 },
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")
@@ -163,10 +112,23 @@ export class SPA {
     }
 
     downvoteQuestion(id: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("question_downvotes_text_" + id);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
+
         this._http.get("api/QnA/DownvoteQuestion/" + id)
             .subscribe(
                 JsonData => {
-                    this.hentAlleKunder();
+                    //this.hentAlleKunder();
+                    this._http.get("api/QnA/" + id)
+                        .subscribe(
+                            returData => {
+                                let JsonData = returData.json();
+                                numField.innerHTML = JsonData.downvotes;
+                            },
+                            error => alert(error),
+                            () => console.log("ferdig get-api/QnA")
+                        );
                 },
                 error => alert(error),
                 () => console.log("ferdig get-api/QnA")

@@ -1,7 +1,6 @@
 export class QnA {
     id: number;
-    question: string;
-    answer: string;
+    text: string;
     upvotes: number;
     downvotes: number;
 }

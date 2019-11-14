@@ -16,27 +16,36 @@ namespace SPA_Angular_Core
         public List<QnA> getAll()
         {
             return _context.DBQnAs.Select(q => new QnA()
-                { 
-                    id = q.id, 
-                    answer = q.answer, 
-                    question = q.question, 
-                    upvotes = q.upvotes,
-                    downvotes = q.downvotes
-                })
-                .ToList();
+            {
+                Id = q.Id,
+                Text = q.Question,
+                Upvotes = q.Upvotes,
+                Downvotes = q.Downvotes,
+                Answers = q.Answers.Select(a => new Answer {
+                    Id = a.Id,
+                    Text = a.Answer,
+                    Upvotes = a.Upvotes
+                }).ToList()
+            }).ToList();
         }
         
         public QnA get(int id)
         {
-            DBQnA dnQnA = _context.DBQnAs.FirstOrDefault(q => q.id == id);
+            DBQnA dnQnA = _context.DBQnAs.FirstOrDefault(q => q.Id == id);
+            
 
-            var qna = new QnA()
+            var qna = new QnA
             {
-                id = dnQnA.id,
-                answer = dnQnA.answer,
-                question = dnQnA.question,
-                upvotes = dnQnA.upvotes,
-                downvotes = dnQnA.downvotes
+                Id = dnQnA.Id,
+                Text = dnQnA.Question,
+                Upvotes = dnQnA.Upvotes,
+                Downvotes = dnQnA.Downvotes,
+                Answers = dnQnA.Answers.Select(a => new Answer
+                {
+                    Id = a.Id,
+                    Text = a.Answer,
+                    Upvotes = a.Upvotes
+                }).ToList()
             };
             return qna;
         }
@@ -45,11 +54,7 @@ namespace SPA_Angular_Core
         {
             var dbQnA = new DBQnA
             {
-                id = qna.id,
-                answer = qna.answer,
-                question = qna.question,
-                upvotes = qna.upvotes,
-                downvotes = qna.downvotes
+                Question = qna.Text
             };
 
             try
@@ -64,30 +69,6 @@ namespace SPA_Angular_Core
             return true;
         }
 
-        public bool update(int id, QnA qna)
-        {
-            DBQnA foundQnA = _context.DBQnAs.Find(id);
-            if (foundQnA == null)
-            {
-                return false;
-            }
-
-            foundQnA.answer = qna.answer;
-            foundQnA.question = qna.question;
-            foundQnA.upvotes = qna.upvotes;
-            foundQnA.downvotes = qna.downvotes;
-
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch(Exception feil)
-            {
-                return false;
-            }
-            return true;
-        }
-
         public bool upvoteQuestion(int id)
         {
             DBQnA foundQnA = _context.DBQnAs.Find(id);
@@ -96,7 +77,7 @@ namespace SPA_Angular_Core
                 return false;
             }
 
-            foundQnA.upvotes = foundQnA.upvotes + 1;
+            foundQnA.Upvotes++;
 
             try
             {
@@ -117,7 +98,7 @@ namespace SPA_Angular_Core
                 return false;
             }
 
-            foundQnA.downvotes = foundQnA.downvotes + 1;
+            foundQnA.Downvotes++;
 
             try
             {
@@ -139,6 +120,58 @@ namespace SPA_Angular_Core
                 _context.SaveChanges();
             }
             catch(Exception feil)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool saveAnswer(int question, Answer answer)
+        {
+            var dbAnswer = new DBAnswer
+            {
+                Id = answer.Id,
+                Answer = answer.Text,
+                Upvotes = answer.Upvotes
+            };
+
+            DBQnA dbQnA = _context.DBQnAs.FirstOrDefault(q => q.Id == question);
+            if (dbQnA == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                _context.Answers.Add(dbAnswer);
+                
+                dbAnswer.QnA = dbQnA;
+                dbQnA.Answers.Add(dbAnswer);
+
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool upvoteAnswer(int id)
+        {
+            DBAnswer dBAnswer = _context.Answers.FirstOrDefault(q => q.Id == id);
+            if(dBAnswer == null)
+            {
+                return false;
+            }
+
+            dBAnswer.Upvotes++;
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception feil)
             {
                 return false;
             }

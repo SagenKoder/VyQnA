@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace SPA_Angular_Core.Models
 {
     public class QnA
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         [Required]
-        [RegularExpression("^[a-zA-ZøæåØÆÅ\\-. ]{10,500}$")]
-        public string question { get; set; }
-        [Required]
-        [RegularExpression("^[a-zA-ZøæåØÆÅ\\-. ]{10,500}$")]
-        public string answer { get; set; }
-        public int upvotes { get; set; }
-        public int downvotes { get; set; }
+        [RegularExpression("^[A-ZÆØÅa-zæøå\\s?\\.,\\-_\\\\';:&%!<>]{5,500}$")]
+        public string Text { get; set; }
+        public int Upvotes { get; set; }
+        public int Downvotes { get; set; }
+        public ICollection<Answer> Answers { get; set; }
     }
 }

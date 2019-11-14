@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Kunde = (function () {
-    function Kunde() {
+var QnA = (function () {
+    function QnA() {
     }
-    return Kunde;
+    return QnA;
 }());
-exports.Kunde = Kunde;
-//# sourceMappingURL=Kunde.js.map
+exports.QnA = QnA;
+//# sourceMappingURL=QnA.js.map

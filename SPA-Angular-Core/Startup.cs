@@ -24,8 +24,8 @@ namespace SPA_Angular_Core
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=QnADB;Trusted_Connection=True;ConnectRetryCount=0";
-            //services.AddDbContext<QnAContext>(options => options.UseSqlServer(connection));
-            services.AddDbContext<QnAContext>(options => options.UseSqlite("Data Source=VyQnADB.db"));
+            //services.AddDbContext<QnAContext>(options => options.UseLazyLoadingProxies().UseSqlServer(connection));
+            services.AddDbContext<QnAContext>(options => options.UseLazyLoadingProxies().UseSqlite("Data Source=VyQnADB.db"));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
