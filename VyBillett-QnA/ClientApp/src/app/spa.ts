@@ -60,9 +60,9 @@ export class SPA {
                 this.allQnA = [];
                 if (JsonData) {
                     this.loading = false;
-                    for (let kundeObjekt of JsonData.json()) {
-                        this.allQnA.push(kundeObjekt);
-                        console.log(kundeObjekt);
+                    for (let obj of JsonData.json()) {
+                        this.allQnA.push(obj);
+                        console.log(obj);
                     }
                     this.allQnA = this.allQnA.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)); // sort reverse order by sum of votes
                 };
@@ -81,7 +81,10 @@ export class SPA {
                 JsonData => {},
                 error => alert(error),
                 () => console.log("Finished upvoting question -> " + id)
-            );
+        );
+
+        document.getElementById("question_upvote_" + id).setAttribute('disabled', 'disabled');
+        document.getElementById("question_downvote_" + id).setAttribute('disabled', 'disabled');
     }
 
     downvoteQuestion(id: number) {
@@ -94,7 +97,10 @@ export class SPA {
                 JsonData => {},
                 error => alert(error),
                 () => console.log("Finished downvoting question -> " + id)
-            );
+        );
+
+        document.getElementById("question_upvote_" + id).setAttribute('disabled', 'disabled');
+        document.getElementById("question_downvote_" + id).setAttribute('disabled', 'disabled');
     }
 
     upvoteAnswer(questionId: number, answerId: number) {
@@ -106,7 +112,9 @@ export class SPA {
                 JsonData => {},
                 error => alert(error),
                 () => console.log("Finished upvoting answer -> " + answerId)
-            );
+        );
+
+        document.getElementById("answer_upvote_" + answerId).setAttribute('disabled', 'disabled');
     }
 
     submitQuestion() {
