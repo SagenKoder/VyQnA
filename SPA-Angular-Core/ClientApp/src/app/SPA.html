@@ -5,7 +5,7 @@
 
     <div class="panel-group" id="accordion">
 
-      <div class="panel panel-default" *ngFor="let item of allQnA;">
+      <div class="panel panel-default" *ngFor="let item of allQnA">
         <div class="panel-heading d-flex flex-nowrap justify-content-between">
           <button class="btn btn-link flex-shrink-1 text-wrap" data-toggle="collapse" [attr.data-target]="'#question-body' + item.id" aria-expanded="true" [attr.aria-controls]="'question-body' + item.id">
             {{item.text}}
@@ -33,7 +33,7 @@
 
           <hr />
 
-          <button class='btn btn-primary' (click)='registerAnswer(item.id)'>Skriv et nytt svar</button>
+          <button class='btn btn-primary' (click)='newAnswer(item.id)'>Skriv et nytt svar</button>
         </div>
       </div>
 
@@ -44,14 +44,14 @@
           </button>
         </div>
         <div class="panel-body collapse" data-parent="#accordion" id="createNewQuestionBody">
-          <button class='btn btn-primary' (click)='registrerKunde()'>Opprett ett nytt spørsmål her</button>
+          <button class='btn btn-primary' (click)='newQuestion()'>Opprett ett nytt spørsmål her</button>
         </div>
       </div>
 
     </div>
   </div>
 
-  <div class="row" *ngIf="visSkjema">
+  <div class="row" *ngIf="showQuestionForm">
     <form [formGroup]="questionForm" (ngSubmit)="submitQuestion()">
       <div class="form-group">
         <label>Spørsmål</label>
@@ -63,7 +63,7 @@
 
       <div class="form-group">
         <button type="submit" [disabled]="!questionForm.valid" class="btn btn-primary">Send inn</button>
-        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
+        <button class="btn btn-default" (click)="showList()">Tilbake</button>
       </div>
     </form>
   </div>
@@ -84,7 +84,7 @@
 
       <div class="form-group">
         <button type="submit" [disabled]="!answerForm.valid" class="btn btn-primary">Send inn svar</button>
-        <button class="btn btn-default" (click)="tilbakeTilListe()">Tilbake</button>
+        <button class="btn btn-default" (click)="showList()">Tilbake</button>
       </div>
     </form>
   </div>

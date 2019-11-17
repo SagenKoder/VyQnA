@@ -7,7 +7,7 @@ namespace SPA_Angular_Core.Models
     {
         public int Id { get; set; }
         [Required]
-        [RegularExpression("^[A-ZÆØÅa-zæøå\\s?\\.,\\-_\\\\';:&%!<>]{5,500}$")]
+        [RegularExpression("^[A-ZÆØÅa-zæøå\\s?\\.,\\-_\\\\';:&%!\\n\\r<>]{5,500}$")]
         public string Text { get; set; }
         public int Upvotes { get; set; }
         public int Downvotes { get; set; }

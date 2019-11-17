@@ -12,7 +12,7 @@ import { Answer } from "./Answer";
 })
 
 export class SPA {
-    visSkjema: boolean;
+    showQuestionForm: boolean;
     showAnswerForm: boolean;
     showQnAList: boolean;
 
@@ -27,7 +27,7 @@ export class SPA {
         this.questionForm = this.fb.group({
             questionText: new FormControl(null, Validators.compose([
                 Validators.required,
-                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,500}")
+                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!\n\r<>]{5,500}")
             ]))
         });
 
@@ -35,26 +35,26 @@ export class SPA {
             questionId: [""],
             answerText: new FormControl(null, Validators.compose([
                 Validators.required,
-                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!<>]{5,5000}")
+                Validators.pattern("[A-ZÆØÅa-zæøå \s\?\.,\-_\\';:&%!\n\r<>]{5,5000}")
             ]))
         });
     }
     
     ngOnInit() {
         this.loading = true;
-        this.hentAlleKunder();
-        this.visSkjema = false;
+        this.fetchAllQuestions();
+        this.showQuestionForm = false;
         this.showAnswerForm = false;
         this.showQnAList = true;
     }
 
     showList() {
         this.showQnAList = true;
-        this.visSkjema = false;
+        this.showQuestionForm = false;
         this.showAnswerForm = false;
     }
 
-    hentAlleKunder() {
+    fetchAllQuestions() {
         this._http.get("api/QnA/")
             .subscribe(JsonData => {
                 this.allQnA = [];
@@ -64,29 +64,67 @@ export class SPA {
                         this.allQnA.push(kundeObjekt);
                         console.log(kundeObjekt);
                     }
+                    this.allQnA = this.allQnA.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)); // sort reverse order by sum of votes
                 };
             },
             error => alert(error),
-            () => console.log("ferdig get-api/QnA")
+            () => console.log("Finished fetching all data, got " + this.allQnA.length + " questions!")
         );
     };
 
+    upvoteQuestion(id: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("question_upvotes_text_" + id);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
+        this._http.get("api/QnA/UpvoteQuestion/" + id)
+            .subscribe(
+                JsonData => {},
+                error => alert(error),
+                () => console.log("Finished upvoting question -> " + id)
+            );
+    }
+
+    downvoteQuestion(id: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("question_downvotes_text_" + id);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
+
+        this._http.get("api/QnA/DownvoteQuestion/" + id)
+            .subscribe(
+                JsonData => {},
+                error => alert(error),
+                () => console.log("Finished downvoting question -> " + id)
+            );
+    }
+
+    upvoteAnswer(questionId: number, answerId: number) {
+        // increment immediately and update from server later
+        var numField = document.getElementById("answer_upvotes_text_" + questionId + '_' + answerId);
+        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
+        this._http.get("api/QnA/UpvoteAnswer/" + answerId)
+            .subscribe(
+                JsonData => {},
+                error => alert(error),
+                () => console.log("Finished upvoting answer -> " + answerId)
+            );
+    }
+
     submitQuestion() {
-        var lagretKunde = new QnA();
+        var question = new QnA();
 
-        lagretKunde.text = this.questionForm.value.questionText;
+        question.text = this.questionForm.value.questionText;
 
-        var body: string = JSON.stringify(lagretKunde);
+        var body: string = JSON.stringify(question);
         var headers = new Headers({ "Content-Type": "application/json" });
 
         this._http.post("api/QnA", body, { headers: headers })
             .subscribe(
                 retur => {
-                    this.hentAlleKunder();
+                    this.fetchAllQuestions();
                     this.showList();
                 },
                 error => alert(error),
-                () => console.log("ferdig post-api/QnA")
+                () => console.log("Finished submitting question -> " + body)
             );
     }
 
@@ -102,15 +140,15 @@ export class SPA {
         this._http.post("api/QnA/SaveAnswer/" + questionId, body, { headers: headers })
             .subscribe(
                 retur => {
-                    this.hentAlleKunder();
+                    this.fetchAllQuestions();
                     this.showList();
                 },
                 error => alert(error),
-                () => console.log("ferdig post-api/QnA")
+                () => console.log("Finished submitting answer -> " + body)
             );
     }
 
-    registerAnswer(id: number) {
+    newAnswer(id: number) {
         this.answerForm.setValue({
             answerText: "",
             questionId: id
@@ -118,53 +156,16 @@ export class SPA {
         this.answerForm.markAsPristine();
         this.showQnAList = false;
         this.showAnswerForm = true;
-        this.visSkjema = false;
+        this.showQuestionForm = false;
     }
 
-    registrerKunde() {
+    newQuestion() {
         this.questionForm.setValue({
             questionText: ""
         });
         this.questionForm.markAsPristine();
         this.showQnAList = false;
         this.showAnswerForm = false;
-        this.visSkjema = true;
-    }
-
-    upvoteQuestion(id: number) {
-        // increment immediately and update from server later
-        var numField = document.getElementById("question_upvotes_text_" + id);
-        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
-        this._http.get("api/QnA/UpvoteQuestion/" + id)
-            .subscribe(
-                JsonData => {},
-                error => alert(error),
-                () => console.log("ferdig get-api/QnA")
-            );
-    }
-
-    downvoteQuestion(id: number) {
-        // increment immediately and update from server later
-        var numField = document.getElementById("question_downvotes_text_" + id);
-        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
-
-        this._http.get("api/QnA/DownvoteQuestion/" + id)
-            .subscribe(
-                JsonData => {},
-                error => alert(error),
-                () => console.log("ferdig get-api/QnA")
-            );
-    }
-
-    upvoteAnswer(questionId: number, answerId: number) {
-        // increment immediately and update from server later
-        var numField = document.getElementById("answer_upvotes_text_" + questionId + '_' + answerId);
-        numField.innerHTML = "" + (parseInt(numField.innerHTML, 10) + 1);
-        this._http.get("api/QnA/UpvoteAnswer/" + answerId)
-            .subscribe(
-                JsonData => {},
-                error => alert(error),
-                () => console.log("ferdig get-api/QnA")
-            );
+        this.showQuestionForm = true;
     }
 }

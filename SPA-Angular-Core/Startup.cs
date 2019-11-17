@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +22,7 @@ namespace SPA_Angular_Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=QnADB;Trusted_Connection=True;ConnectRetryCount=0";
             //services.AddDbContext<QnAContext>(options => options.UseLazyLoadingProxies().UseSqlServer(connection));
             services.AddDbContext<QnAContext>(options => options.UseLazyLoadingProxies().UseSqlite("Data Source=VyQnADB.db"));
