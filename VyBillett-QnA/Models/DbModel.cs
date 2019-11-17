@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace SPA_Angular_Core.Models
+namespace VyBillettQnA.Models
 {
     public class DBQnA
     {

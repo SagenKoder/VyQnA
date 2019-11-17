@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SPA_Angular_Core.Models;
+using VyBillettQnA.Models;
 
-namespace SPA_Angular_Core
+namespace VyBillettQnA
 {
     public class QnADB
     {

@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SPA_Angular_Core.Models;
+using VyBillettQnA.Models;
 
-namespace SPA_Angular_Core
+namespace VyBillettQnA
 {
     public class Startup
     {

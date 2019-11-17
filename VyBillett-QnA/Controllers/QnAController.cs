@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
-using SPA_Angular_Core.Models;
+using VyBillettQnA.Models;
 
-namespace SPA_Angular_Core.Controllers
+namespace VyBillettQnA.Controllers
 {
     [Route("api/[controller]")]
     public class QnAController : Controller

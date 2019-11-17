@@ -3,9 +3,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SPA_Angular_Core.Models;
+using VyBillettQnA.Models;
 
-namespace SPA_Angular_Core
+namespace VyBillettQnA
 {
     public class Program
     {

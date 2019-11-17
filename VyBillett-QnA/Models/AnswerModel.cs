@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace SPA_Angular_Core.Models
+namespace VyBillettQnA.Models
 {
     public class Answer
     {

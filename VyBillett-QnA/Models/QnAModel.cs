@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SPA_Angular_Core.Models
+namespace VyBillettQnA.Models
 {
     public class QnA
     {
