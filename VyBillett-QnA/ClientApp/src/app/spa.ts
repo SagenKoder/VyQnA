@@ -65,6 +65,9 @@ export class SPA {
                         console.log(obj);
                     }
                     this.allQnA = this.allQnA.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)); // sort reverse order by sum of votes
+                    this.allQnA.forEach(qna => {
+                        qna.answers.sort((a, b) => (b.upvotes - a.upvotes)); // sort reverse order by upvotes
+                    });
                 };
             },
             error => alert(error),
